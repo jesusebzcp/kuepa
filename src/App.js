@@ -1,25 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useContext, useEffect } from "react";
+import { StoreContext } from "./flux";
+import Login from "./pages/Login";
+//Styles
+import "./styles/main.css";
+
+//Flux
+import RouterApp from "./router";
+import { userAuth } from "./flux/user/actions";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const { state, userDispatch } = useContext(StoreContext);
+  const { userState } = state;
+  const { user } = userState;
+
+  const handleAuth = async () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      await userAuth(token, userDispatch);
+    }
+  };
+
+  useEffect(() => {
+    handleAuth();
+  }, []);
+
+  return <>{user ? <RouterApp /> : <Login />}</>;
 }
 
 export default App;
